@@ -61,12 +61,19 @@ function isBuddyHookHandler(handler) {
 
   return handler.hooks.some((hook) => {
     const command = hook && typeof hook.command === 'string' ? hook.command : '';
+    const normalized = command.replace(/\\/g, '/').toLowerCase();
+    const hasBuddyScript = (
+      normalized.includes('session-start.sh') ||
+      normalized.includes('post-tool-use.sh') ||
+      normalized.includes('stop.sh')
+    );
     return (
-      command.includes('session-start.sh') ||
-      command.includes('post-tool-use.sh') ||
-      command.includes('stop.sh') ||
-      command.includes('${CLAUDE_PLUGIN_ROOT}/hooks/') ||
-      command.includes('/buddybar/plugin/hooks/')
+      hasBuddyScript &&
+      (
+        normalized.includes('${claude_plugin_root}/hooks/') ||
+        normalized.includes('/buddybar/') ||
+        normalized.includes('/claude-buddy/')
+      )
     );
   });
 }
@@ -269,7 +276,10 @@ switch (command) {
     const subcommand = args[1] || 'on';
     if (subcommand === 'install' || subcommand === 'on') {
       const installed = installStatusline({ forceBuddy: args.includes('--force') });
-      if (installed) console.log(`BuddyBar statusline installed (${getLiveMode()} mode).`);
+      if (installed) {
+        setupHooks({ verbose: false });
+        console.log(`BuddyBar statusline installed (${getLiveMode()} mode).`);
+      }
     } else if (subcommand === 'remove' || subcommand === 'off' || subcommand === 'uninstall') {
       removeStatusline();
     } else {
@@ -306,6 +316,7 @@ switch (command) {
       removeStatusline();
     } else {
       installStatusline({ forceBuddy: true });
+      setupHooks({ verbose: false });
       console.log(`BuddyBar statusline enabled (${getLiveMode()} mode).`);
     }
     break;

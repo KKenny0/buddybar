@@ -2,7 +2,7 @@
 
 A silent coding companion for Claude Code — watches your rhythm, coaches your pace, grows with you.
 
-Your buddy tracks coding patterns via hooks and surfaces insights on the statusline. It stays out of your conversation — no context pollution, no injected reactions. All feedback lives on the statusline, sidebar, or on-demand detail card.
+Your buddy tracks coding patterns via hooks and surfaces insights on the statusline. It stays out of your conversation — no context pollution, no injected reactions. All feedback lives on the statusline or on-demand detail card.
 
 ```
 my-project main  |  📖🐉 focused ✦1  |  ctx 23% · ↻ core.js
@@ -20,7 +20,6 @@ my-project main  |  📖🐉 focused ✦1  |  ctx 23% · ↻ core.js
 - 🏃 **Rhythm Coach** — Error avalanche alerts, file grinding detection, session fatigue warnings
 - 📟 **Native Statusline** — Always-visible workspace context, buddy avatar, mood, and coach signals
 - 🧾 **Terminal Detail Card** — `/buddy` shows pet status, art, stats, and recent activity
-- 🖥️ **Optional tmux Panel/Sidebar** — Live watcher for terminal users
 
 ## Installation
 
@@ -36,9 +35,8 @@ Restart Claude Code and the plugin is active globally.
 ```
 /buddybar:buddy hatch          # Hatch your first pet
 /buddybar:buddy                # Show pet detail card
-/buddybar:buddy live           # Enable the statusline
-/buddybar:buddy feed           # Feed your pet
-/buddybar:buddy pet            # Pet your buddy (+2 XP)
+/buddybar:buddy statusline on  # Enable the statusline
+/buddybar:buddy doctor         # Check install health
 ```
 
 ## Commands
@@ -47,22 +45,11 @@ Restart Claude Code and the plugin is active globally.
 |---------|-------------|
 | `hatch` | Hatch your first pet (based on your username) |
 | *(no arg)* | Show pet detail card |
-| `feed` | Feed your pet (restores hunger) |
-| `play` | Play with your pet (boosts energy + mood) |
-| `pet` | Pet your buddy (+2 XP, daily cap 20) |
-| `stats` | Show detailed 5-dimension stats |
 | `rename <name>` | Give your pet a custom name |
-| `live` | Install the native Claude Code Buddy statusline |
-| `statusline remove` | Remove Buddy from the statusline |
-| `panel` | Open temporary tmux popup, or print detail card outside tmux |
-| `sidebar start` | Start optional detached/tmux sidebar |
-| `sidebar stop` | Stop the sidebar |
-| `quiet` | Minimal statusline presence |
-| `focus` | Balanced presence (default) |
-| `lively` | More active statusline updates |
-| `events` | Show recent Buddy activity |
-| `summary` | Show session summary (unlocks at Lv.10) |
-| `unlocks` | Show level unlock progress |
+| `statusline on` | Install the native Claude Code Buddy statusline |
+| `statusline off` | Remove Buddy from the statusline |
+| `mode <quiet\|focus\|lively>` | Set statusline presence mode |
+| `quiet` / `focus` / `lively` | Hidden shortcuts for presence mode |
 | `evolve` | Trigger evolution (Lv.15+, auto on level up) |
 | `prestige` | Reset with permanent bonuses (Lv.20+) |
 | `doctor` / `check` | Check install, statusline, and update identity |
@@ -74,11 +61,8 @@ All commands are prefixed with `/buddybar:buddy` in Claude Code.
 | Level | Unlocks |
 |-------|---------|
 | 1-2 | Basic avatar and mood |
-| 3 | Test status indicator |
 | 5 | File grinding detection |
 | 7 | Session duration / fatigue warning |
-| 10 | Session summary |
-| 13 | Error pattern recognition |
 | 15 | **Evolution** — avatar transforms |
 | 20 | **Prestige** — reset with bonuses |
 

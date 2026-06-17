@@ -116,6 +116,72 @@ function checkClaudeStatusline(checks, homeDir) {
   }
 }
 
+function buddyHookCommands(settings) {
+  const hooks = settings?.hooks || {};
+  const commands = [];
+  for (const handlers of Object.values(hooks)) {
+    if (!Array.isArray(handlers)) continue;
+    for (const handler of handlers) {
+      if (!Array.isArray(handler?.hooks)) continue;
+      for (const hook of handler.hooks) {
+        const command = typeof hook?.command === 'string' ? hook.command : '';
+        const normalized = command.replace(/\\/g, '/').toLowerCase();
+        const isBuddyHook = (
+          (
+            normalized.includes('session-start.sh') ||
+            normalized.includes('post-tool-use.sh') ||
+            normalized.includes('stop.sh')
+          ) &&
+          (
+            normalized.includes('/buddybar/') ||
+            normalized.includes('/claude-buddy/') ||
+            normalized.includes('${claude_plugin_root}/hooks/')
+          )
+        );
+        if (isBuddyHook) commands.push(command);
+      }
+    }
+  }
+  return commands;
+}
+
+function scriptPathFromCommand(command) {
+  const match = String(command).match(/bash\s+"([^"]+\.sh)"|bash\s+'([^']+\.sh)'|bash\s+(\S+\.sh)/i);
+  return match && (match[1] || match[2] || match[3]);
+}
+
+function checkClaudeHooks(checks, homeDir) {
+  const settingsPath = path.join(homeDir, '.claude', 'settings.json');
+  const settings = readJsonSafe(settingsPath);
+  if (!settings.ok) {
+    addCheck(checks, 'warn', 'Claude hooks', `Cannot read ${shortPath(settingsPath, homeDir)}`);
+    return;
+  }
+
+  const commands = buddyHookCommands(settings.value);
+  if (commands.length === 0) {
+    addCheck(checks, 'warn', 'Claude hooks', 'No BuddyBar hooks configured. Run /buddybar:buddy statusline on --force.');
+    return;
+  }
+
+  const missing = commands
+    .map((command) => scriptPathFromCommand(command))
+    .filter(Boolean)
+    .filter((scriptPath) => !fs.existsSync(scriptPath));
+
+  if (missing.length > 0) {
+    addCheck(
+      checks,
+      'fail',
+      'Claude hooks',
+      `Missing hook script: ${shortPath(missing[0], homeDir)}. Run /buddybar:buddy statusline on --force to refresh hooks.`,
+    );
+    return;
+  }
+
+  addCheck(checks, 'pass', 'Claude hooks', `${commands.length} BuddyBar hook command(s) are reachable`);
+}
+
 function checkPluginInstall(checks, homeDir) {
   const installedPath = path.join(homeDir, '.claude', 'plugins', 'installed_plugins.json');
   const installed = readJsonSafe(installedPath);
@@ -158,6 +224,7 @@ function runDoctor(options = {}) {
   checkBuddyData(checks, homeDir, buddyHome);
   checkRenderer(checks);
   checkClaudeStatusline(checks, homeDir);
+  checkClaudeHooks(checks, homeDir);
   checkPluginInstall(checks, homeDir);
 
   return {

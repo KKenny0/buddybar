@@ -57,4 +57,62 @@ describe('runDoctor', () => {
     expect(report).toContain('/plugin update buddybar@claude-buddy');
     expect(report).toContain('version 80b550a64142 does not match gitCommitSha 32fd5c1385ea');
   });
+
+  test('fails when configured BuddyBar hook scripts point at missing paths', () => {
+    const root = makeTempRoot();
+    const buddyHome = path.join(root, '.claude-buddy');
+    const installPath = path.join(root, '.claude', 'plugins', 'cache', 'buddybar', 'buddybar', 'abc123');
+    const statuslinePath = path.join(installPath, 'src', 'bin', 'buddy-statusline.js');
+    const staleHookPath = path.join(root, '.claude', 'plugins', 'marketplaces', 'claude-buddy', 'plugin', 'hooks', 'stop.sh');
+
+    fs.mkdirSync(path.dirname(statuslinePath), { recursive: true });
+    fs.writeFileSync(statuslinePath, '');
+    fs.mkdirSync(buddyHome, { recursive: true });
+    fs.writeFileSync(path.join(buddyHome, 'events.log'), '');
+    writeJson(path.join(buddyHome, 'config.json'), { liveMode: 'focus', statuslineEnabled: true });
+    writeJson(path.join(buddyHome, 'session.json'), {});
+    writeJson(path.join(buddyHome, 'history.json'), []);
+    writeJson(path.join(buddyHome, 'pet.json'), { speciesEmoji: '🦆', mood: 'happy' });
+
+    writeJson(path.join(root, '.claude', 'settings.json'), {
+      statusLine: {
+        type: 'command',
+        command: `"node" "${statuslinePath}"`,
+      },
+      hooks: {
+        Stop: [
+          {
+            matcher: '*',
+            hooks: [
+              {
+                type: 'command',
+                command: `bash '${staleHookPath}'`,
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    writeJson(path.join(root, '.claude', 'plugins', 'installed_plugins.json'), {
+      version: 2,
+      plugins: {
+        'buddybar@buddybar': [
+          {
+            installPath,
+            version: 'abc123',
+            gitCommitSha: 'abc123',
+          },
+        ],
+      },
+    });
+
+    const result = runDoctor({ homeDir: root, buddyHome });
+    const report = formatDoctorReport(result);
+
+    expect(result.status).toBe('fail');
+    expect(report).toContain('Claude hooks');
+    expect(report).toContain('Missing hook script');
+    expect(report).toContain('statusline on --force');
+  });
 });
