@@ -134,21 +134,24 @@ function evolvedAvatar(pet) {
   return path?.emoji ? `${path.emoji}${speciesEmoji}` : speciesEmoji;
 }
 
+function joinSignalParts(parts) {
+  return parts.filter(Boolean).join(`${c.dim} · ${c.reset}`);
+}
+
 function buildSegments(pet, session, mode, wsInfo) {
   const segs = [];
   const prestige = pet.prestige || 0;
 
-  // Workspace context — dim layer, always shown
+  // Workspace context — compact and stable.
+  const workspaceParts = [];
   if (wsInfo.folder) {
-    segs.push(`${c.dim}${wsInfo.folder}${c.reset}`);
+    workspaceParts.push(wsInfo.folder);
   }
   if (wsInfo.branch) {
-    segs.push(`${c.dim}${wsInfo.branch}${c.reset}`);
+    workspaceParts.push(wsInfo.branch);
   }
-  const ctxColor = contextWindowColor(wsInfo.ctxPct);
-  if (ctxColor) {
-    const pctStr = wsInfo.ctxPct != null ? `${Math.round(wsInfo.ctxPct)}%` : '--';
-    segs.push(`${ctxColor}ctx${c.reset} ${ctxColor}${pctStr}${c.reset}`);
+  if (workspaceParts.length > 0) {
+    segs.push(`${c.dim}${workspaceParts.join(' ')}${c.reset}`);
   }
 
   // Pet state: compact avatar + current mood. Details live in /buddy.
@@ -157,17 +160,25 @@ function buildSegments(pet, session, mode, wsInfo) {
     `${evolvedAvatar(pet)} ${colorForMood(pet.mood)}${pet.mood}${c.reset}${prestigeTag}`
   );
 
+  // Work signals: only current, actionable signals live here.
+  const signals = [];
+  const ctxColor = contextWindowColor(wsInfo.ctxPct);
+  if (ctxColor) {
+    const pctStr = wsInfo.ctxPct != null ? `${Math.round(wsInfo.ctxPct)}%` : '--';
+    signals.push(`${ctxColor}ctx ${pctStr}${c.reset}`);
+  }
+
   // Coach: error avalanche (always shown — critical signal)
   const errThresh = errorThreshold(pet.stats);
   if ((session.consecutiveErrors || 0) >= errThresh) {
-    segs.push(`${c.red}\u00d7${session.consecutiveErrors}${c.reset}`);
+    signals.push(`${c.red}\u00d7${session.consecutiveErrors}${c.reset}`);
   }
 
   // Level 5+: file focus grinding
   if (unlocked(pet.level, 'fileFocus')) {
     const grinding = grindingFile(session, grindingThreshold(pet.stats));
     if (grinding) {
-      segs.push(`${c.yellow}\u21bb ${grinding}${c.reset}`);
+      signals.push(`${c.yellow}\u21bb ${grinding}${c.reset}`);
     }
   }
 
@@ -176,10 +187,14 @@ function buildSegments(pet, session, mode, wsInfo) {
     const dur = sessionDurationMin(session);
     const fatigue = fatigueThresholdMin(pet.stats);
     if (dur >= fatigue.red) {
-      segs.push(`${c.red}\u23f0 ${formatDuration(dur)}${c.reset}`);
+      signals.push(`${c.red}\u23f0 ${formatDuration(dur)}${c.reset}`);
     } else if (dur >= fatigue.yellow) {
-      segs.push(`${c.yellow}${formatDuration(dur)}${c.reset}`);
+      signals.push(`${c.yellow}${formatDuration(dur)}${c.reset}`);
     }
+  }
+
+  if (signals.length > 0) {
+    segs.push(joinSignalParts(signals));
   }
 
   return segs;
@@ -223,5 +238,5 @@ main().catch(() => {
 
 // Export for testing
 if (typeof module !== 'undefined') {
-  module.exports = { errorThreshold, grindingThreshold, fatigueThresholdMin, grindingFile, contextWindowColor, resolveBranch, evolvedAvatar };
+  module.exports = { errorThreshold, grindingThreshold, fatigueThresholdMin, grindingFile, contextWindowColor, resolveBranch, evolvedAvatar, joinSignalParts };
 }

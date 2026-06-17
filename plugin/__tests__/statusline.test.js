@@ -35,7 +35,7 @@ jest.mock('../src/core', () => ({
   effectiveLevel: jest.fn((pet) => pet.prestige > 0 ? `${pet.level}+${pet.prestige}` : String(pet.level)),
 }));
 
-const { errorThreshold, grindingThreshold, fatigueThresholdMin, grindingFile, contextWindowColor, resolveBranch, evolvedAvatar } = require('../src/bin/buddy-statusline');
+const { errorThreshold, grindingThreshold, fatigueThresholdMin, grindingFile, contextWindowColor, resolveBranch, evolvedAvatar, joinSignalParts } = require('../src/bin/buddy-statusline');
 
 describe('evolvedAvatar', () => {
   test('returns species emoji before evolution', () => {
@@ -49,6 +49,15 @@ describe('evolvedAvatar', () => {
 
   test('falls back to species emoji for unknown paths', () => {
     expect(evolvedAvatar({ speciesEmoji: '🦆', evolutionPath: 'unknown' })).toBe('🦆');
+  });
+});
+
+describe('joinSignalParts', () => {
+  test('groups work signals into a single segment', () => {
+    const result = joinSignalParts(['ctx 18%', '15h25m']);
+    expect(result).toContain('ctx 18%');
+    expect(result).toContain('15h25m');
+    expect(result).toContain('·');
   });
 });
 

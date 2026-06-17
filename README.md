@@ -6,15 +6,14 @@ Your buddy tracks your coding patterns via Claude Code hooks and surfaces insigh
 
 **Statusline (always visible in Claude Code):**
 ```
-my-project  main  ctx 23%  |  🐉 火火 · focused · focus  |  Lv.7 30%  |  ↻ core.js
+my-project main  |  📖🐉 focused ✦1  |  ctx 23% · ↻ core.js
 ```
 
 | Segment | Example | What it shows |
 |---------|---------|---------------|
-| Workspace | `my-project  main  ctx 23%` | Project folder, git branch, context window usage (yellow >50%, red >80%) |
-| Pet | `🐉 火火 · focused · focus` | Species emoji, name, mood, presence mode |
-| Level | `Lv.7 30%` | Current level and XP progress to next |
-| Coach | `↻ core.js` `×3` `⏰ 2h` | Rhythm coach signals (level-gated) |
+| Workspace | `my-project main` | Project folder and git branch |
+| Buddy | `📖🐉 focused ✦1` | Evolved avatar, mood, prestige cycle |
+| Work signal | `ctx 23% · ↻ core.js` | Context usage and rhythm coach signals |
 
 **On-demand detail card (`/buddy`):**
 ```
@@ -42,7 +41,7 @@ my-project  main  ctx 23%  |  🐉 火火 · focused · focus  |  Lv.7 30%  |  �
 - 📈 **XP & Leveling** — 20 levels with level-gated feature unlocks
 - 🔇 **Silent by Design** — Hooks produce zero stdout. No additionalContext, no conversation injection.
 - 🏃 **Rhythm Coach** — Error avalanche alerts, file grinding detection, session fatigue warnings
-- 📟 **Native Statusline** — Always-visible workspace context, mood, mode, level, and coach signals
+- 📟 **Native Statusline** — Always-visible workspace context, buddy avatar, mood, and coach signals
 - 🧾 **Terminal Detail Card** — `/buddy` shows pet status, art, stats, and recent activity
 - 💾 **Persistent State** — Global `~/.buddybar/` storage, survives sessions
 
@@ -118,7 +117,7 @@ Your buddy grows with you. Higher levels unlock more statusline features:
 
 | Level | Unlocks |
 |-------|---------|
-| 1-2 | Basic status (name, mood, XP progress) |
+| 1-2 | Basic avatar and mood |
 | 5 | File grinding detection |
 | 7 | Session duration / fatigue warning |
 | 15 | **Evolution** — avatar transforms based on highest stat |
