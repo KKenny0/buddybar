@@ -168,7 +168,7 @@ These appear on the statusline based on your coding patterns:
 ```
 /buddybar:buddy statusline on
 ```
-Compact always-visible line: workspace context, mood, level, XP%, coach signals.
+Compact always-visible line: workspace/branch, buddy avatar, mood, prestige, context, and coach signals.
 
 **On-demand detail card:**
 ```

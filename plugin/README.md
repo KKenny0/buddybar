@@ -14,7 +14,7 @@ my-project main  |  📖🐉 focused ✦1  |  ctx 23% · ↻ core.js
 - 🐉 **12 Species** across 5 rarity tiers (Common → Legendary) with 1% shiny chance
 - 📊 **5-Dimension Stats** — Debug, Patience, Chaos, Wisdom, Snark
 - 📈 **XP & Leveling** — 20 levels with level-gated feature unlocks
-- 🧬 **Evolution (Lv.15)** — Species transforms based on highest stat (5 paths)
+- 🧬 **Evolution (Lv.15)** — Avatar changes based on highest stat (5 paths)
 - ✦ **Prestige (Lv.20)** — Reset with permanent bonuses
 - 🔇 **Silent by Design** — Hooks produce zero stdout. No conversation injection.
 - 🏃 **Rhythm Coach** — Error avalanche alerts, file grinding detection, session fatigue warnings
