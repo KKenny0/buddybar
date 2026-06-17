@@ -1,41 +1,9 @@
 /**
  * Tests for stat-influenced statusline threshold functions.
- * The statusline module runs main() on import, so we mock its dependencies.
+ * Tests for the side-effect-free statusline renderer.
  */
-
-jest.mock('../src/storage', () => ({
-  ensureSetup: jest.fn(),
-  readSession: jest.fn(() => ({
-    mode: 'focus',
-    currentTask: '',
-    consecutiveErrors: 0,
-    lastFailureAt: null,
-    lastRecoveryAt: null,
-    lastActivityAt: null,
-    recentTools: [],
-    recentEvents: [],
-  })),
-  readConfig: jest.fn(() => ({ liveMode: 'focus' })),
-  writeSession: jest.fn(),
-}));
-
-jest.mock('../src/core', () => ({
-  getOrCreatePet: jest.fn(() => ({
-    species: 'cat', speciesName: 'Cat', speciesEmoji: '🐱',
-    rarity: 'common', shiny: false, hat: null, name: 'Test',
-    level: 20, xp: 1000, xpToNext: 0,
-    stats: { debug: 50, patience: 50, chaos: 50, wisdom: 50, snark: 50 },
-    mood: 'happy', hunger: 0, energy: 100, streak: 1,
-    toolUseCount: 0, petXpToday: 0, statsXpToday: 0,
-    sessionStartXpToday: false, prestige: 0,
-    evolvedForm: null, evolutionPath: null,
-    createdAt: new Date().toISOString(), lastActive: new Date().toISOString(),
-  })),
-  xpProgress: jest.fn(() => 50),
-  effectiveLevel: jest.fn((pet) => pet.prestige > 0 ? `${pet.level}+${pet.prestige}` : String(pet.level)),
-}));
-
-const { errorThreshold, grindingThreshold, fatigueThresholdMin, grindingFile, contextWindowColor, resolveBranch, evolvedAvatar, joinSignalParts } = require('../src/bin/buddy-statusline');
+const { errorThreshold, grindingThreshold, fatigueThresholdMin, grindingFile, contextWindowColor, evolvedAvatar, joinSignalParts, renderStatusline } = require('../src/statusline');
+const { resolveBranch } = require('../src/bin/buddy-statusline');
 
 describe('evolvedAvatar', () => {
   test('returns species emoji before evolution', () => {
@@ -58,6 +26,37 @@ describe('joinSignalParts', () => {
     expect(result).toContain('ctx 18%');
     expect(result).toContain('15h25m');
     expect(result).toContain('·');
+  });
+});
+
+describe('renderStatusline', () => {
+  test('renders workspace, buddy avatar, and work signals as three segments', () => {
+    const now = Date.now();
+    const line = renderStatusline(
+      {
+        speciesEmoji: '🦆',
+        evolutionPath: 'sage',
+        mood: 'happy',
+        prestige: 1,
+        level: 8,
+        stats: { debug: 50, patience: 50, chaos: 50, wisdom: 50, snark: 50 },
+      },
+      {
+        consecutiveErrors: 0,
+        lastActivityAt: new Date(now).toISOString(),
+        recentTools: [
+          { tool: 'edit', file: 'src/core.js', timestamp: new Date(now - 90 * 60000).toISOString() },
+        ],
+      },
+      'focus',
+      { folder: 'claude-buddy', branch: 'main', ctxPct: 18 },
+    );
+
+    expect(line).toContain('claude-buddy main');
+    expect(line).toContain('📖🦆');
+    expect(line).toContain('✦1');
+    expect(line).toContain('ctx 18%');
+    expect(line.split('|')).toHaveLength(3);
   });
 });
 
@@ -170,6 +169,11 @@ describe('grindingFile with threshold', () => {
 
   test('returns shortest filename component', () => {
     const tools = Array(5).fill({ tool: 'edit', file: 'src/plugins/core.js' });
+    expect(grindingFile(makeSession(tools))).toBe('core.js');
+  });
+
+  test('returns shortest filename component for Windows paths', () => {
+    const tools = Array(5).fill({ tool: 'edit', file: 'D:\\project\\src\\core.js' });
     expect(grindingFile(makeSession(tools))).toBe('core.js');
   });
 });

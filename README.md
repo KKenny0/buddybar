@@ -229,18 +229,16 @@ All data stored in `~/.buddybar/`:
 ## Architecture
 
 ```
-┌─────────────────────────────────────┐
-│           Claude Code               │
-│                                     │
-│  Hooks ──▶ pet/session state files  │
-│  (silent)     + events.log          │
-│                                     │
-│  /buddy ──▶ buddy-core ──▶ card     │
-│  statusLine ────────────▶ one line  │
-│                                     │
-│  ✗ no stdout from hooks             │
-│  ✗ no additionalContext injection   │
-└─────────────────────────────────────┘
+Claude Code hooks/statusLine
+        │
+        ▼
+Claude adapter
+        │
+        ├── Buddy core: pet state, XP, evolution, prestige
+        ├── Card renderer: /buddy detail card
+        └── Statusline renderer: compact three-segment line
+
+Hooks stay silent: no stdout, no additionalContext injection.
 ```
 
 ## Troubleshooting
