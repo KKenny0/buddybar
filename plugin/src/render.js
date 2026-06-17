@@ -4,7 +4,7 @@
  * receive a string to print.
  */
 
-const { SPECIES, applyEvolvedArt } = require('./data/species');
+const { SPECIES, EVOLUTION_PATHS, applyEvolvedArt } = require('./data/species');
 const { xpProgress, effectiveLevel } = require('./core');
 
 const ESC = '\x1b[';
@@ -289,6 +289,19 @@ function modeOf(session = {}, config = {}) {
   return session.mode || config.liveMode || 'focus';
 }
 
+function evolutionDetails(pet) {
+  if (!pet?.evolutionPath) return 'Path: unevolved';
+  const path = Object.values(EVOLUTION_PATHS).find((item) => item.id === pet.evolutionPath);
+  if (!path) return `Path: ${pet.evolutionPath}`;
+  return `Path: ${path.emoji} ${path.name} / ${path.label}`;
+}
+
+function prestigeDetails(pet) {
+  const prestige = pet?.prestige || 0;
+  if (prestige <= 0) return 'Prestige: none';
+  return `Prestige: ✦${prestige}  permanent bonus +${prestige * 5}`;
+}
+
 function renderEmptyState(options = {}) {
   const colors = palette(options.color !== false);
   const width = Math.max(24, options.width || 42);
@@ -340,6 +353,7 @@ function renderDetailCard(options = {}) {
   lines.push(`${colors.dim}├${'─'.repeat(width - 2)}┤${colors.reset}`);
   lines.push(`${colors.dim}│${colors.reset} ${padRight(`${pet.speciesEmoji} ${colors.bold}${pet.name}${colors.reset}${shinyTag}${evolutionTag}${prestigeTag}  ${rc}Lv.${eLv} ${pet.rarity}${colors.reset}  ${colors.cyan}${mode}${colors.reset}`, inner)} ${colors.dim}│${colors.reset}`);
   lines.push(`${colors.dim}│${colors.reset} ${padRight(`XP ${bar(progress, 16, colors.brightGreen, colors)} ${progress}%   ${mood}   streak ${pet.streak || 0}d`, inner)} ${colors.dim}│${colors.reset}`);
+  lines.push(`${colors.dim}│${colors.reset} ${padRight(`${evolutionDetails(pet)}   ${prestigeDetails(pet)}`, inner)} ${colors.dim}│${colors.reset}`);
   lines.push(`${colors.dim}│${colors.reset} ${padRight(`Energy ${bar(pet.energy, 10, colors.brightYellow, colors)} ${String(pet.energy).padStart(3)}/100   Hunger ${bar(pet.hunger, 10, colors.red, colors)} ${String(pet.hunger).padStart(3)}/100`, inner)} ${colors.dim}│${colors.reset}`);
   lines.push(`${colors.dim}│${colors.reset} ${' '.repeat(inner)} ${colors.dim}│${colors.reset}`);
 
