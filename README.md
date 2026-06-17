@@ -100,6 +100,7 @@ After installation, commands are prefixed with the plugin name:
 | `/buddybar:buddy mode <quiet\|focus\|lively>` | Set Buddy presence mode |
 | `/buddybar:buddy evolve` | Trigger evolution (Lv.15+, auto on level up) |
 | `/buddybar:buddy prestige` | Reset with permanent bonuses (Lv.20+) |
+| `/buddybar:buddy doctor` | Check install, statusline, and update identity |
 
 ### Hooks (automatic, silent)
 
@@ -260,6 +261,8 @@ rm -rf ~/.claude/plugins/cache/buddybar
 /plugin marketplace add KKenny0/buddybar
 /plugin install buddybar@buddybar
 ```
+
+Run `/buddybar:buddy doctor` first if you are unsure which plugin identity is installed. Older installs may still be registered as `buddybar@claude-buddy`; in that case, update that exact identity or reinstall the marketplace under the `buddybar` name.
 
 **`/buddybar:buddy` says "Unknown skill"?**
 Plugin not installed. Run the installation commands above.

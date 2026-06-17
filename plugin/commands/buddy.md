@@ -1,6 +1,6 @@
 ---
 description: Manage BuddyBar pet status, statusline, panel, sidebar, and presence mode
-argument-hint: "[status|hatch|feed|play|pet|stats|rename NAME|live|statusline install|statusline remove|panel|sidebar start|sidebar stop|quiet|focus|lively|events|summary|unlocks|evolve|prestige]"
+argument-hint: "[status|hatch|feed|play|pet|stats|rename NAME|live|statusline install|statusline remove|panel|sidebar start|sidebar stop|quiet|focus|lively|events|summary|unlocks|evolve|prestige|doctor|check]"
 allowed-tools: Bash(node:*)
 ---
 

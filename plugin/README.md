@@ -65,6 +65,7 @@ Restart Claude Code and the plugin is active globally.
 | `unlocks` | Show level unlock progress |
 | `evolve` | Trigger evolution (Lv.15+, auto on level up) |
 | `prestige` | Reset with permanent bonuses (Lv.20+) |
+| `doctor` / `check` | Check install, statusline, and update identity |
 
 All commands are prefixed with `/buddybar:buddy` in Claude Code.
 

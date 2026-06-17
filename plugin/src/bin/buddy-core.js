@@ -24,6 +24,7 @@ const {
 const { readPet, ensureSetup, readSession, readConfig, writeConfig } = require('../storage');
 const { renderDetailCard } = require('../render');
 const { EVOLUTION_PATHS } = require('../data/species');
+const { runDoctor, formatDoctorReport } = require('../doctor');
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -354,6 +355,15 @@ switch (command) {
     break;
   }
 
+  case 'doctor':
+  case 'check': {
+    const result = runDoctor();
+    if (jsonOutput) emitJson(result);
+    else console.log(formatDoctorReport(result));
+    if (result.status === 'fail') process.exitCode = 1;
+    break;
+  }
+
   // Internal hook handlers
   case 'session-start': {
     const pet = getOrCreatePet(args[1]);
@@ -409,5 +419,6 @@ switch (command) {
       console.log('  mode <quiet|focus|lively>  Set presence mode');
       console.log('  evolve                     Trigger evolution (Lv.15+)');
       console.log('  prestige                   Reset with bonuses (Lv.20+)');
+      console.log('  doctor                     Check install and runtime health');
     }
 }
