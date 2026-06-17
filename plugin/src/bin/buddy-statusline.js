@@ -7,7 +7,7 @@
 
 const { execSync } = require('child_process');
 const path = require('path');
-const { getOrCreatePet, xpProgress, effectiveLevel } = require('../core');
+const { getOrCreatePet } = require('../core');
 const { ensureSetup, readSession, readConfig } = require('../storage');
 const { EVOLUTION_PATHS } = require('../data/species');
 
@@ -126,10 +126,16 @@ function contextWindowColor(pct) {
   return c.dim;
 }
 
+function evolvedAvatar(pet) {
+  const speciesEmoji = pet?.speciesEmoji || '🐾';
+  if (!pet?.evolutionPath) return speciesEmoji;
+
+  const path = Object.values(EVOLUTION_PATHS).find(p => p.id === pet.evolutionPath);
+  return path?.emoji ? `${path.emoji}${speciesEmoji}` : speciesEmoji;
+}
+
 function buildSegments(pet, session, mode, wsInfo) {
   const segs = [];
-  const progress = xpProgress(pet);
-  const eLv = effectiveLevel(pet);
   const prestige = pet.prestige || 0;
 
   // Workspace context — dim layer, always shown
@@ -145,28 +151,11 @@ function buildSegments(pet, session, mode, wsInfo) {
     segs.push(`${ctxColor}ctx${c.reset} ${ctxColor}${pctStr}${c.reset}`);
   }
 
-  // Pet identity (merged: name + mood + mode)
-  const displayName = pet.evolvedForm || pet.name;
+  // Pet state: compact avatar + current mood. Details live in /buddy.
+  const prestigeTag = prestige > 0 ? `${c.brightYellow} ✦${prestige}${c.reset}` : '';
   segs.push(
-    `${pet.speciesEmoji} ${displayName} ${c.dim}\u00b7${c.reset} ` +
-    `${colorForMood(pet.mood)}${pet.mood}${c.reset}` +
-    `${c.dim} \u00b7 ${mode}${c.reset}`
+    `${evolvedAvatar(pet)} ${colorForMood(pet.mood)}${pet.mood}${c.reset}${prestigeTag}`
   );
-  segs.push(`${c.dim}Lv.${eLv}${c.reset} ${progress}%`);
-
-  // Prestige indicator
-  if (prestige > 0) {
-    const stars = '\u2726'.repeat(Math.min(prestige, 5));
-    segs.push(`${c.brightYellow}${stars}${c.reset}`);
-  }
-
-  // Evolution path indicator (Lv.15+)
-  if (unlocked(pet.level, 'evolution') && pet.evolutionPath) {
-    const path = Object.values(EVOLUTION_PATHS).find(p => p.id === pet.evolutionPath);
-    if (path) {
-      segs.push(`${c.magenta}${path.label}${c.reset}`);
-    }
-  }
 
   // Coach: error avalanche (always shown — critical signal)
   const errThresh = errorThreshold(pet.stats);
@@ -234,5 +223,5 @@ main().catch(() => {
 
 // Export for testing
 if (typeof module !== 'undefined') {
-  module.exports = { errorThreshold, grindingThreshold, fatigueThresholdMin, grindingFile, contextWindowColor, resolveBranch };
+  module.exports = { errorThreshold, grindingThreshold, fatigueThresholdMin, grindingFile, contextWindowColor, resolveBranch, evolvedAvatar };
 }

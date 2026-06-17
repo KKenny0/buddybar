@@ -35,7 +35,22 @@ jest.mock('../src/core', () => ({
   effectiveLevel: jest.fn((pet) => pet.prestige > 0 ? `${pet.level}+${pet.prestige}` : String(pet.level)),
 }));
 
-const { errorThreshold, grindingThreshold, fatigueThresholdMin, grindingFile, contextWindowColor, resolveBranch } = require('../src/bin/buddy-statusline');
+const { errorThreshold, grindingThreshold, fatigueThresholdMin, grindingFile, contextWindowColor, resolveBranch, evolvedAvatar } = require('../src/bin/buddy-statusline');
+
+describe('evolvedAvatar', () => {
+  test('returns species emoji before evolution', () => {
+    expect(evolvedAvatar({ speciesEmoji: '🦆' })).toBe('🦆');
+  });
+
+  test('prefixes evolution path emoji after evolution', () => {
+    expect(evolvedAvatar({ speciesEmoji: '🦆', evolutionPath: 'sage' })).toBe('📖🦆');
+    expect(evolvedAvatar({ speciesEmoji: '🦆', evolutionPath: 'zen' })).toBe('🪷🦆');
+  });
+
+  test('falls back to species emoji for unknown paths', () => {
+    expect(evolvedAvatar({ speciesEmoji: '🦆', evolutionPath: 'unknown' })).toBe('🦆');
+  });
+});
 
 describe('errorThreshold', () => {
   test('base threshold at debug=50', () => {

@@ -193,7 +193,7 @@ const HATS = {
  */
 const EVOLUTION_PATHS = {
   debug: { id: 'valor', name: 'Valor', emoji: '⚔️', label: '勇' },
-  patience: { id: 'zen', name: 'Zen', emoji: '🧘', label: '禅' },
+  patience: { id: 'zen', name: 'Zen', emoji: '🪷', label: '禅' },
   chaos: { id: 'storm', name: 'Storm', emoji: '⚡', label: '雷' },
   wisdom: { id: 'sage', name: 'Sage', emoji: '📖', label: '智' },
   snark: { id: 'rogue', name: 'Rogue', emoji: '🎭', label: '影' },
