@@ -121,22 +121,22 @@ Your buddy grows with you. Higher levels unlock more statusline features:
 | 1-2 | Basic status (name, mood, XP progress) |
 | 5 | File grinding detection |
 | 7 | Session duration / fatigue warning |
-| 15 | **Evolution** — species transforms based on highest stat |
+| 15 | **Evolution** — avatar transforms based on highest stat |
 | 20 | **Prestige** — reset to Lv.1 with permanent bonuses |
 
 ### Evolution System (Lv.15)
 
-When your buddy reaches Lv.15, it evolves based on its highest stat. Each stat maps to an evolution path:
+When your buddy reaches Lv.15, its avatar evolves based on its highest stat. Each stat maps to an evolution path:
 
-| Highest Stat | Path | Label | Art Effect |
-|-------------|------|-------|------------|
-| Debug | Valor | 勇 | ⚔ Sword indicators |
-| Patience | Zen | 禅 | ≋ Serene aura |
-| Chaos | Storm | 雷 | ⚡ Electric sparks |
-| Wisdom | Sage | 智 | ✧ Wisdom glow |
-| Snark | Rogue | 影 | ◇ Shadow wisps |
+| Highest Stat | Path | Avatar | Art Effect |
+|-------------|------|--------|------------|
+| Debug | Valor | `⚔️🐉` | ⚔ Sword indicators |
+| Patience | Zen | `🪷🐉` | ≋ Serene aura |
+| Chaos | Storm | `⚡🐉` | ⚡ Electric sparks |
+| Wisdom | Sage | `📖🐉` | ✧ Wisdom glow |
+| Snark | Rogue | `🎭🐉` | ◇ Shadow wisps |
 
-Evolution changes your species name (e.g., Dragon → 智龙), applies visual art modifiers, and grants +10 to all stats. Evolution is automatic on reaching Lv.15 — triggered via `addXp()`.
+Evolution changes the statusline avatar (for example, `🐉` → `📖🐉`), applies visual art modifiers in the detail card, and grants +10 to all stats. Evolution is automatic on reaching Lv.15 — triggered via `addXp()`.
 
 ### Prestige System (Lv.20)
 

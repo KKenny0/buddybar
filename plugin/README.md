@@ -78,20 +78,20 @@ All commands are prefixed with `/buddybar:buddy` in Claude Code.
 | 7 | Session duration / fatigue warning |
 | 10 | Session summary |
 | 13 | Error pattern recognition |
-| 15 | **Evolution** — species transforms |
+| 15 | **Evolution** — avatar transforms |
 | 20 | **Prestige** — reset with bonuses |
 
 ## Evolution Paths (Lv.15)
 
-Your buddy evolves based on its highest stat:
+Your buddy's avatar evolves based on its highest stat:
 
-| Highest Stat | Path | Label |
-|-------------|------|-------|
-| Debug | Valor | 勇 |
-| Patience | Zen | 禅 |
-| Chaos | Storm | 雷 |
-| Wisdom | Sage | 智 |
-| Snark | Rogue | 影 |
+| Highest Stat | Path | Avatar |
+|-------------|------|--------|
+| Debug | Valor | `⚔️🐉` |
+| Patience | Zen | `🪷🐉` |
+| Chaos | Storm | `⚡🐉` |
+| Wisdom | Sage | `📖🐉` |
+| Snark | Rogue | `🎭🐉` |
 
 ## Hooks (automatic, silent)
 

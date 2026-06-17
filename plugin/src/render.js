@@ -342,7 +342,6 @@ function renderDetailCard(options = {}) {
   const eLv = effectiveLevel(pet);
   const prestige = pet.prestige || 0;
   const prestigeTag = prestige > 0 ? ` ${colors.brightYellow}\u2726${prestige}${colors.reset}` : '';
-  const evolutionTag = pet.evolvedForm ? ` ${colors.magenta}[${pet.evolvedForm}]${colors.reset}` : '';
   const leftArtWidth = Math.min(24, Math.max(...art.map(visibleLength), 8) + 2);
   const quoteWidth = inner - leftArtWidth - 2;
   const reactionLines = reaction ? wrapText(`"${reaction}"`, Math.max(12, quoteWidth)).slice(0, art.length) : [];
@@ -351,7 +350,7 @@ function renderDetailCard(options = {}) {
   lines.push(`${colors.dim}╭${'─'.repeat(width - 2)}╮${colors.reset}`);
   lines.push(`${colors.dim}│${colors.reset} ${padRight(`${colors.brightCyan}${colors.bold}BuddyBar${colors.reset}`, inner)} ${colors.dim}│${colors.reset}`);
   lines.push(`${colors.dim}├${'─'.repeat(width - 2)}┤${colors.reset}`);
-  lines.push(`${colors.dim}│${colors.reset} ${padRight(`${pet.speciesEmoji} ${colors.bold}${pet.name}${colors.reset}${shinyTag}${evolutionTag}${prestigeTag}  ${rc}Lv.${eLv} ${pet.rarity}${colors.reset}  ${colors.cyan}${mode}${colors.reset}`, inner)} ${colors.dim}│${colors.reset}`);
+  lines.push(`${colors.dim}│${colors.reset} ${padRight(`${pet.speciesEmoji} ${colors.bold}${pet.name}${colors.reset}${shinyTag}${prestigeTag}  ${rc}Lv.${eLv} ${pet.rarity}${colors.reset}  ${colors.cyan}${mode}${colors.reset}`, inner)} ${colors.dim}│${colors.reset}`);
   lines.push(`${colors.dim}│${colors.reset} ${padRight(`XP ${bar(progress, 16, colors.brightGreen, colors)} ${progress}%   ${mood}   streak ${pet.streak || 0}d`, inner)} ${colors.dim}│${colors.reset}`);
   lines.push(`${colors.dim}│${colors.reset} ${padRight(`${evolutionDetails(pet)}   ${prestigeDetails(pet)}`, inner)} ${colors.dim}│${colors.reset}`);
   lines.push(`${colors.dim}│${colors.reset} ${padRight(`Energy ${bar(pet.energy, 10, colors.brightYellow, colors)} ${String(pet.energy).padStart(3)}/100   Hunger ${bar(pet.hunger, 10, colors.red, colors)} ${String(pet.hunger).padStart(3)}/100`, inner)} ${colors.dim}│${colors.reset}`);

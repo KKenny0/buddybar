@@ -579,7 +579,7 @@ function evolvePet(pet) {
   const mode = getLiveMode();
   const reaction = createReaction(
     pet,
-    `${pet.speciesEmoji} ${pet.name} 进化成了 ${evolvedName}！形态：${path.name}（${path.label}）。`,
+    `${pet.speciesEmoji} ${pet.name} 进化出了新的头像：${path.emoji}${pet.speciesEmoji}（${path.name}）。`,
     'excited',
     'level_up',
     mode,
@@ -588,10 +588,10 @@ function evolvePet(pet) {
   pet.lastReaction = reaction;
   writePet(pet);
   appendHistory({ level: pet.level, timestamp: new Date().toISOString(), event: `evolved:${path.id}` });
-  logEvent({ type: 'evolution', message: `${pet.name} evolved into ${evolvedName} (${path.name})!`, timestamp: new Date().toISOString() });
+  logEvent({ type: 'evolution', message: `${pet.name} evolved avatar to ${path.emoji}${pet.speciesEmoji} (${path.name})!`, timestamp: new Date().toISOString() });
   rememberEvent({
     type: 'evolution',
-    message: `Evolved into ${evolvedName}!`,
+    message: `Evolved avatar to ${path.emoji}${pet.speciesEmoji}!`,
     importance: 'critical',
     reaction,
     timestamp: new Date().toISOString(),

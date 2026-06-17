@@ -46,6 +46,7 @@ describe('renderDetailCard', () => {
 
     expect(plain).toContain('Path: 📖 Sage / 智');
     expect(plain).toContain('Prestige: ✦2  permanent bonus +10');
+    expect(plain).not.toContain('[智鸭]');
     expect(validateFrameWidth(output, 76)).toEqual([]);
   });
 

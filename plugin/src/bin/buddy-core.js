@@ -23,6 +23,7 @@ const {
 } = require('../core');
 const { readPet, ensureSetup, readSession, readConfig, writeConfig } = require('../storage');
 const { renderDetailCard } = require('../render');
+const { EVOLUTION_PATHS } = require('../data/species');
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -155,6 +156,11 @@ function printDetailCard(pet, options = {}) {
     width: options.width || 72,
     color: options.color,
   }));
+}
+
+function evolutionPathFor(pet) {
+  if (!pet?.evolutionPath) return null;
+  return Object.values(EVOLUTION_PATHS).find((pathInfo) => pathInfo.id === pet.evolutionPath) || null;
 }
 
 function statuslineScriptPath() {
@@ -307,7 +313,9 @@ switch (command) {
   case 'evolve': {
     const pet = getOrCreatePet(process.env.USER ?? 'anonymous');
     if (pet.evolvedForm) {
-      console.log(`${pet.speciesEmoji} ${pet.name} has already evolved into ${pet.evolvedForm} (${pet.evolutionPath}).`);
+      const pathInfo = evolutionPathFor(pet);
+      const avatar = pathInfo ? `${pathInfo.emoji}${pet.speciesEmoji}` : pet.speciesEmoji;
+      console.log(`${avatar} ${pet.name} has already evolved on the ${pathInfo?.name || pet.evolutionPath} path.`);
       break;
     }
     if (pet.level < 15) {
@@ -318,7 +326,9 @@ switch (command) {
     const updated = readPet();
     if (jsonOutput) emitJson(currentReactionPayload(updated));
     else {
-      console.log(`✨ ${updated.name} evolved into ${updated.evolvedForm}!`);
+      const pathInfo = evolutionPathFor(updated);
+      const avatar = pathInfo ? `${pathInfo.emoji}${updated.speciesEmoji}` : updated.speciesEmoji;
+      console.log(`✨ ${updated.name} evolved a new avatar: ${avatar} (${pathInfo?.name || updated.evolutionPath}).`);
       printDetailCard(updated);
     }
     break;
