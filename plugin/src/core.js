@@ -315,7 +315,7 @@ function getOrCreatePet(username) {
 
 /** Add XP and handle level ups */
 function addXp(pet, amount, reason) {
-  if (pet.level >= 20) return pet;
+  if (pet.level >= 20) return prestigePet(pet);
   pet.xp += amount;
   pet.lastActive = new Date().toISOString();
 
@@ -331,7 +331,9 @@ function addXp(pet, amount, reason) {
     }
   }
 
-  pet.xpToNext = pet.level >= 20 ? 0 : xpToNextLevel(pet.level);
+  if (pet.level >= 20) return prestigePet(pet);
+
+  pet.xpToNext = xpToNextLevel(pet.level);
   writePet(pet);
   return pet;
 }
@@ -402,6 +404,7 @@ function onToolUse(pet, tool, file, options = {}) {
   const command = options.command || '';
   const recovered = !failed && (sessionBefore.consecutiveErrors || 0) > 0;
   const oldLevel = pet.level;
+  const oldPrestige = pet.prestige || 0;
 
   pet.toolUseCount += 1;
   pet.lastActive = new Date().toISOString();
@@ -443,7 +446,9 @@ function onToolUse(pet, tool, file, options = {}) {
   if (!failed && sameFileEvents >= 5 && ['edit', 'multiedit', 'write'].includes(String(tool).toLowerCase())) {
     reaction = createReaction(pet, `${pet.speciesEmoji} ${pet.name} 注意到你一直在打磨 ${file}，保持专注。`, 'focused', 'important', mode);
   }
-  if (pet.level > oldLevel) {
+  if ((pet.prestige || 0) > oldPrestige) {
+    reaction = pet.lastReaction || createReaction(pet, `${pet.speciesEmoji} ${pet.name} 转生了，进入第 ${pet.prestige} 轮回。`, 'excited', 'level_up', mode, 10000);
+  } else if (pet.level > oldLevel) {
     reaction = createReaction(pet, `${pet.speciesEmoji} ${pet.name} 升到了 Lv.${pet.level}。`, 'excited', 'level_up', mode, 10000);
   }
   pet.mood = reaction.mood;

@@ -187,17 +187,22 @@ describe('addXp', () => {
     expect(result.level).toBeGreaterThanOrEqual(5);
   });
 
-  test('does not exceed level 20', () => {
-    const pet = makePet({ level: 19, xp: 940 });
+  test('prestiges when crossing level 20', () => {
+    const pet = makePet({ level: 19, xp: 940, stats: { debug: 50, patience: 50, chaos: 50, wisdom: 50, snark: 50 } });
     const result = core.addXp(pet, 200, 'test');
-    expect(result.level).toBe(20);
+    expect(result.level).toBe(1);
+    expect(result.xp).toBe(0);
+    expect(result.prestige).toBe(1);
+    expect(result.stats.debug).toBe(55);
   });
 
-  test('no XP gain at max level', () => {
-    const pet = makePet({ level: 20, xp: 1000 });
+  test('prestiges a pet already sitting at max level on the next XP event', () => {
+    const pet = makePet({ level: 20, xp: 1000, prestige: 0, stats: { debug: 50, patience: 50, chaos: 50, wisdom: 50, snark: 50 } });
     const result = core.addXp(pet, 50, 'test');
-    expect(result.xp).toBe(1000);
-    expect(result.level).toBe(20);
+    expect(result.xp).toBe(0);
+    expect(result.level).toBe(1);
+    expect(result.prestige).toBe(1);
+    expect(result.stats.wisdom).toBe(55);
   });
 });
 
