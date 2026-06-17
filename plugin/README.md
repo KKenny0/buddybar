@@ -116,6 +116,10 @@ Stored in `~/.claude-buddy/`:
 | `history.json` | Level milestones & streak history |
 | `session.json` | Recent events, presence mode, error/recovery state |
 
+## Architecture
+
+BuddyBar keeps the compact statusline renderer separate from CLI-specific input parsing. Claude Code uses the default adapter today; the generic adapter gives other CLIs a stable place to map their cwd, branch, and context usage into the same renderer.
+
 ## License
 
 MIT

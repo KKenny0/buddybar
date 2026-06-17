@@ -5,50 +5,22 @@
  * All output is purely visual — nothing is injected into conversation context.
  */
 
-const { execSync } = require('child_process');
-const path = require('path');
 const { getOrCreatePet } = require('../core');
 const { ensureSetup, readSession, readConfig } = require('../storage');
 const { colors, renderStatusline } = require('../statusline');
-
-// --- Statusline rendering ---
-
-function readStdinJson() {
-  return new Promise((resolve) => {
-    let data = '';
-    process.stdin.setEncoding('utf8');
-    process.stdin.on('data', (chunk) => { data += chunk; });
-    process.stdin.on('end', () => {
-      if (!data.trim()) { resolve({}); return; }
-      try { resolve(JSON.parse(data)); } catch { resolve({}); }
-    });
-    setTimeout(() => resolve({}), 40);
-  });
-}
-
-function resolveBranch(ctx) {
-  if (ctx.workspace?.git_worktree) return ctx.workspace.git_worktree;
-  try {
-    return execSync('git branch --show-current', {
-      encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 2000
-    }).trim() || null;
-  } catch { return null; }
-}
+const { readContextForAdapter, workspaceInfoForAdapter } = require('../cli-adapters');
 
 async function main() {
   ensureSetup();
-  const ctx = await readStdinJson();
+  const adapterName = process.env.BUDDYBAR_CLI || 'claude';
+  const ctx = await readContextForAdapter(adapterName, process.stdin);
 
   const config = readConfig();
   const session = readSession();
   const mode = session.mode || config.liveMode || 'focus';
   const pet = getOrCreatePet(process.env.USER || 'anonymous');
 
-  const wsInfo = {
-    folder: ctx.cwd ? path.basename(ctx.cwd) : null,
-    branch: resolveBranch(ctx),
-    ctxPct: ctx.context_window?.used_percentage ?? null,
-  };
+  const wsInfo = workspaceInfoForAdapter(adapterName, ctx, { cwd: process.cwd() });
 
   if (!pet) {
     // Pet data unavailable (corrupted or locked). Show minimal statusline.
@@ -75,5 +47,5 @@ if (require.main === module) {
 
 // Export for testing
 if (typeof module !== 'undefined') {
-  module.exports = { readStdinJson, resolveBranch };
+  module.exports = { main };
 }

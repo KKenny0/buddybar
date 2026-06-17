@@ -3,7 +3,9 @@
  * Tests for the side-effect-free statusline renderer.
  */
 const { errorThreshold, grindingThreshold, fatigueThresholdMin, grindingFile, contextWindowColor, evolvedAvatar, joinSignalParts, renderStatusline } = require('../src/statusline');
-const { resolveBranch } = require('../src/bin/buddy-statusline');
+const { Readable } = require('stream');
+
+const { getAdapter, readStdinJson, resolveBranch, workspaceInfoForAdapter } = require('../src/cli-adapters');
 
 describe('evolvedAvatar', () => {
   test('returns species emoji before evolution', () => {
@@ -213,5 +215,46 @@ describe('resolveBranch', () => {
     const result = resolveBranch({});
     // Can be a branch name if running tests inside a git repo, or null
     expect(typeof result === 'string' || result === null).toBe(true);
+  });
+});
+
+describe('CLI adapters', () => {
+  test('exposes claude and generic adapters', () => {
+    expect(getAdapter('claude').id).toBe('claude');
+    expect(getAdapter('generic').id).toBe('generic');
+  });
+
+  test('maps generic CLI context into renderer workspace info', () => {
+    const wsInfo = workspaceInfoForAdapter('generic', {
+      cwd: 'D:\\project\\buddybar',
+      branch: 'main',
+      ctxPct: 42,
+    });
+
+    expect(wsInfo).toEqual({
+      folder: 'buddybar',
+      branch: 'main',
+      ctxPct: 42,
+    });
+  });
+
+  test('maps Claude Code statusline context into renderer workspace info', () => {
+    const wsInfo = workspaceInfoForAdapter('claude', {
+      cwd: 'D:\\project\\buddybar',
+      workspace: { git_worktree: 'feature/statusline' },
+      context_window: { used_percentage: 23 },
+    });
+
+    expect(wsInfo).toEqual({
+      folder: 'buddybar',
+      branch: 'feature/statusline',
+      ctxPct: 23,
+    });
+  });
+
+  test('reads piped JSON before fallback timeout', async () => {
+    const input = Readable.from(['{"ctxPct":42}']);
+    const ctx = await readStdinJson(input, 200);
+    expect(ctx).toEqual({ ctxPct: 42 });
   });
 });

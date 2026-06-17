@@ -233,7 +233,7 @@ All data stored in `~/.buddybar/`:
 Claude Code hooks/statusLine
         │
         ▼
-Claude adapter
+CLI adapter registry (Claude today, generic adapter for future CLIs)
         │
         ├── Buddy core: pet state, XP, evolution, prestige
         ├── Card renderer: /buddy detail card
