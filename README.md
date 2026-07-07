@@ -47,24 +47,24 @@ my-project main  |  📖🐉 focused ✦1  |  ctx 23% · ↻ core.js
 
 ## Installation
 
-### One-line install (recommended)
+### Claude Code install (recommended)
 
-In Claude Code, run:
+From your terminal, run:
 
-```
-/plugin marketplace add KKenny0/buddybar
-/plugin install buddybar@buddybar
+```bash
+claude plugin marketplace add KKenny0/buddybar
+claude plugin install buddybar@buddybar
 ```
 
 That's it. Restart Claude Code and the plugin is active globally.
 
 ### Update
 
-When a new version is released, use CLI commands (not the marketplace UI — the UI's "update" button has a [known bug](https://github.com/anthropics/claude-code/issues/16866)):
+When a new version is released, use terminal commands (not the marketplace UI — the UI's "update" button has a [known bug](https://github.com/anthropics/claude-code/issues/16866)):
 
-```
-/plugin marketplace update buddybar
-/plugin update buddybar@buddybar
+```bash
+claude plugin marketplace update buddybar
+claude plugin update buddybar@buddybar
 ```
 
 Then restart Claude Code to apply.
@@ -246,20 +246,20 @@ Hooks stay silent: no stdout, no additionalContext injection.
 
 **Plugin won't update?**
 
-The marketplace UI's "update" button may not work due to a [known Claude Code bug](https://github.com/anthropics/claude-code/issues/16866). Use CLI commands instead:
+The marketplace UI's "update" button may not work due to a [known Claude Code bug](https://github.com/anthropics/claude-code/issues/16866). Use terminal commands instead:
 
-```
-/plugin marketplace update buddybar
-/plugin update buddybar@buddybar
+```bash
+claude plugin marketplace update buddybar
+claude plugin update buddybar@buddybar
 ```
 
 If that still fails, do a clean reinstall:
 
 ```bash
 rm -rf ~/.claude/plugins/cache/buddybar
-/plugin marketplace remove buddybar
-/plugin marketplace add KKenny0/buddybar
-/plugin install buddybar@buddybar
+claude plugin marketplace remove buddybar
+claude plugin marketplace add KKenny0/buddybar
+claude plugin install buddybar@buddybar
 ```
 
 Run `/buddybar:buddy doctor` first if you are unsure which plugin identity is installed. BuddyBar expects the installed plugin identity to be `buddybar@buddybar`.

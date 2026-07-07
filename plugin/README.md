@@ -23,9 +23,11 @@ my-project main  |  📖🐉 focused ✦1  |  ctx 23% · ↻ core.js
 
 ## Installation
 
-```
-/plugin marketplace add KKenny0/buddybar
-/plugin install buddybar@buddybar
+From your terminal, run:
+
+```bash
+claude plugin marketplace add KKenny0/buddybar
+claude plugin install buddybar@buddybar
 ```
 
 Restart Claude Code and the plugin is active globally.

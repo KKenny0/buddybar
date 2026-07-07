@@ -245,15 +245,16 @@
       padding: 12px 20px; background: var(--surface);
       border: 1px solid var(--border); border-radius: var(--radius-md);
       font-family: var(--font-d); font-size: 1.2rem;
-      margin-bottom: 8px;
+      margin-bottom: 8px; gap: 12px; text-align: left;
     }
-    .install-cmd code { color: var(--accent); }
+    .install-cmd code { color: var(--accent); min-width: 0; overflow-wrap: anywhere; line-height: 1.35; }
     .copy-btn {
       background: none; border: 1px solid var(--border);
       color: var(--text-3); padding: 2px 12px;
       font-family: var(--font-d); font-size: 1rem;
       border-radius: var(--radius-sm); cursor: pointer;
       transition-property: color, border-color; transition-duration: 0.15s;
+      flex: 0 0 auto;
     }
     .copy-btn:hover { color: var(--accent); border-color: oklch(0.78 0.08 155); }
     .copy-btn.copied { color: var(--accent); border-color: var(--accent); }
@@ -537,15 +538,15 @@
         <h2 class="section-title reveal" data-i18n="install.title">Get started</h2>
         <div class="install-commands reveal">
           <div class="install-cmd">
-            <code>/plugin marketplace add KKenny0/buddybar</code>
-            <button class="copy-btn" data-copy="/plugin marketplace add KKenny0/buddybar" aria-label="Copy command">copy</button>
+            <code>claude plugin marketplace add KKenny0/buddybar</code>
+            <button class="copy-btn" data-copy="claude plugin marketplace add KKenny0/buddybar" aria-label="Copy command">copy</button>
           </div>
           <div class="install-cmd">
-            <code>/plugin install buddybar@buddybar</code>
-            <button class="copy-btn" data-copy="/plugin install buddybar@buddybar" aria-label="Copy command">copy</button>
+            <code>claude plugin install buddybar@buddybar</code>
+            <button class="copy-btn" data-copy="claude plugin install buddybar@buddybar" aria-label="Copy command">copy</button>
           </div>
         </div>
-        <p class="install-note reveal" data-i18n="install.note">Restart Claude Code and the plugin is active globally.</p>
+        <p class="install-note reveal" data-i18n="install.note">Run both commands in your terminal, then restart Claude Code.</p>
         <p class="install-alt reveal" data-i18n-html="install.alt">Or <a href="https://github.com/KKenny0/buddybar#manual-setup">install manually</a> from source.</p>
       </div>
     </section>
@@ -606,7 +607,7 @@
         'u15': 'Evolution: avatar transforms by highest stat',
         'u20': 'Prestige: reset with permanent bonuses',
         'install.title': 'Get started',
-        'install.note': 'Restart Claude Code and the plugin is active globally.',
+        'install.note': 'Run both commands in your terminal, then restart Claude Code.',
         'install.alt': 'Or <a href="https://github.com/KKenny0/buddybar#manual-setup">install manually</a> from source.',
         'footer.lic': 'MIT license',
         'copy': 'copy',
@@ -658,7 +659,7 @@
         'u15': '进化：头像根据最高属性变化',
         'u20': '声望：重置等级并获得永久加成',
         'install.title': '开始使用',
-        'install.note': '重启 Claude Code，插件即刻全局生效。',
+        'install.note': '在终端运行这两条命令，然后重启 Claude Code。',
         'install.alt': '或从源码<a href="https://github.com/KKenny0/buddybar#manual-setup">手动安装</a>。',
         'footer.lic': 'MIT 许可证',
         'copy': '复制',
