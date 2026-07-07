@@ -1,6 +1,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const { runDoctor, formatDoctorReport } = require('../src/doctor');
 
@@ -13,13 +14,24 @@ function makeTempRoot() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'buddybar-doctor-'));
 }
 
+// Mirror of buddy-core.js bashPath(): MSYS (Git Bash) uses /c/, WSL uses /mnt/c/.
+let _msysBash;
 function toBashPath(filePath) {
   const text = String(filePath);
   const windowsDrive = text.match(/^([A-Za-z]):[\\/](.*)$/);
-  if (windowsDrive) {
-    return `/mnt/${windowsDrive[1].toLowerCase()}/${windowsDrive[2].replace(/\\/g, '/')}`;
+  if (!windowsDrive) return text.replace(/\\/g, '/');
+  const drive = windowsDrive[1].toLowerCase();
+  const rest = windowsDrive[2].replace(/\\/g, '/');
+  if (_msysBash === undefined && process.platform === 'win32') {
+    try {
+      _msysBash = /MINGW|MSYS/.test(execSync('bash -c "uname -s"', {
+        encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'],
+      }));
+    } catch (_) {
+      _msysBash = false;
+    }
   }
-  return text.replace(/\\/g, '/');
+  return `${_msysBash ? `/${drive}` : `/mnt/${drive}`}/${rest}`;
 }
 
 function writeBuddyData(buddyHome) {
@@ -115,6 +127,24 @@ describe('runDoctor', () => {
     expect(report).toContain('Claude hooks');
     expect(report).toContain('Windows path that bash cannot open');
     expect(report).toContain('statusline on --force');
+  });
+
+  testWindowsPath('toBashPath matches the runtime bash flavor (MSYS /c/ vs WSL /mnt/c/)', () => {
+    // ponytail: regression for /mnt/c/ vs /c/ hook path bug. If bashPath/toBashPath
+    // emits a path form the runtime bash can't read, every hook fails with
+    // "No such file or directory". Don't let this regress silently.
+    const result = toBashPath('C:\\Users\\dev\\plugin\\hooks\\stop.sh');
+    let uname = '';
+    try {
+      uname = execSync('bash -c "uname -s"', {
+        encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'],
+      });
+    } catch (_) {}
+    if (/MINGW|MSYS/.test(uname)) {
+      expect(result).toBe('/c/Users/dev/plugin/hooks/stop.sh');
+    } else {
+      expect(result).toBe('/mnt/c/Users/dev/plugin/hooks/stop.sh');
+    }
   });
 
   test('fails when configured BuddyBar hook scripts use Windows line endings', () => {
