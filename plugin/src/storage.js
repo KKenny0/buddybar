@@ -9,7 +9,8 @@ const os = require('os');
 
 /** Get the buddy home directory */
 function getBuddyHome() {
-  return path.join(os.homedir(), '.claude-buddy');
+  if (process.env.BUDDYBAR_HOME) return process.env.BUDDYBAR_HOME;
+  return path.join(os.homedir(), '.buddybar');
 }
 
 /** Ensure the buddy home directory and all files exist */

@@ -51,10 +51,10 @@ describe('renderStatusline', () => {
         ],
       },
       'focus',
-      { folder: 'claude-buddy', branch: 'main', ctxPct: 18 },
+      { folder: 'buddybar', branch: 'main', ctxPct: 18 },
     );
 
-    expect(line).toContain('claude-buddy main');
+    expect(line).toContain('buddybar main');
     expect(line).toContain('📖🦆');
     expect(line).toContain('✦1');
     expect(line).toContain('ctx 18%');

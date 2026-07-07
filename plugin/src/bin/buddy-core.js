@@ -36,6 +36,15 @@ function shellQuote(value) {
   return `'${String(value).replace(/'/g, `'\\''`)}'`;
 }
 
+function bashPath(value) {
+  const text = String(value);
+  const windowsDrive = text.match(/^([A-Za-z]):[\\/](.*)$/);
+  if (windowsDrive) {
+    return `/mnt/${windowsDrive[1].toLowerCase()}/${windowsDrive[2].replace(/\\/g, '/')}`;
+  }
+  return text.replace(/\\/g, '/');
+}
+
 function commandQuote(value) {
   const text = String(value);
   if (process.platform === 'win32') {
@@ -50,7 +59,7 @@ function createHookHandler(scriptPath, matcher) {
     hooks: [
       {
         type: 'command',
-        command: `bash ${shellQuote(scriptPath)}`,
+        command: `bash ${shellQuote(bashPath(scriptPath))}`,
       },
     ],
   };
@@ -71,8 +80,7 @@ function isBuddyHookHandler(handler) {
       hasBuddyScript &&
       (
         normalized.includes('${claude_plugin_root}/hooks/') ||
-        normalized.includes('/buddybar/') ||
-        normalized.includes('/claude-buddy/')
+        normalized.includes('/buddybar/')
       )
     );
   });

@@ -134,7 +134,6 @@ function buddyHookCommands(settings) {
           ) &&
           (
             normalized.includes('/buddybar/') ||
-            normalized.includes('/claude-buddy/') ||
             normalized.includes('${claude_plugin_root}/hooks/')
           )
         );
@@ -148,6 +147,48 @@ function buddyHookCommands(settings) {
 function scriptPathFromCommand(command) {
   const match = String(command).match(/bash\s+"([^"]+\.sh)"|bash\s+'([^']+\.sh)'|bash\s+(\S+\.sh)/i);
   return match && (match[1] || match[2] || match[3]);
+}
+
+function localPathFromBashPath(scriptPath) {
+  const text = String(scriptPath);
+  const wslPath = text.match(/^\/mnt\/([A-Za-z])\/(.*)$/);
+  if (process.platform === 'win32' && wslPath) {
+    return `${wslPath[1].toUpperCase()}:\\${wslPath[2].replace(/\//g, '\\')}`;
+  }
+  return text;
+}
+
+function isWindowsDrivePath(scriptPath) {
+  return /^[A-Za-z]:[\\/]/.test(String(scriptPath));
+}
+
+function hookScriptIssue(command, homeDir) {
+  const scriptPath = scriptPathFromCommand(command);
+  if (!scriptPath) {
+    return `Cannot find hook script path in command: ${command}`;
+  }
+
+  if (String(scriptPath).includes('$')) return null;
+
+  if (process.platform === 'win32' && isWindowsDrivePath(scriptPath)) {
+    return `Hook command uses a Windows path that bash cannot open: ${scriptPath}. Run /buddybar:buddy statusline on --force to refresh hooks.`;
+  }
+
+  const localPath = localPathFromBashPath(scriptPath);
+  if (!fs.existsSync(localPath)) {
+    return `Missing hook script: ${shortPath(localPath, homeDir)}. Run /buddybar:buddy statusline on --force to refresh hooks.`;
+  }
+
+  try {
+    const content = fs.readFileSync(localPath, 'utf8');
+    if (content.includes('\r\n')) {
+      return `Hook script uses Windows line endings: ${shortPath(localPath, homeDir)}. Reinstall BuddyBar or refresh the installed plugin files.`;
+    }
+  } catch (err) {
+    return `Cannot read hook script: ${shortPath(localPath, homeDir)} (${err.message})`;
+  }
+
+  return null;
 }
 
 function checkClaudeHooks(checks, homeDir) {
@@ -164,17 +205,16 @@ function checkClaudeHooks(checks, homeDir) {
     return;
   }
 
-  const missing = commands
-    .map((command) => scriptPathFromCommand(command))
-    .filter(Boolean)
-    .filter((scriptPath) => !fs.existsSync(scriptPath));
+  const issues = commands
+    .map((command) => hookScriptIssue(command, homeDir))
+    .filter(Boolean);
 
-  if (missing.length > 0) {
+  if (issues.length > 0) {
     addCheck(
       checks,
       'fail',
       'Claude hooks',
-      `Missing hook script: ${shortPath(missing[0], homeDir)}. Run /buddybar:buddy statusline on --force to refresh hooks.`,
+      issues[0],
     );
     return;
   }

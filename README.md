@@ -262,7 +262,7 @@ rm -rf ~/.claude/plugins/cache/buddybar
 /plugin install buddybar@buddybar
 ```
 
-Run `/buddybar:buddy doctor` first if you are unsure which plugin identity is installed. Older installs may still be registered as `buddybar@claude-buddy`; in that case, update that exact identity or reinstall the marketplace under the `buddybar` name.
+Run `/buddybar:buddy doctor` first if you are unsure which plugin identity is installed. BuddyBar expects the installed plugin identity to be `buddybar@buddybar`.
 
 **`/buddybar:buddy` says "Unknown skill"?**
 Plugin not installed. Run the installation commands above.

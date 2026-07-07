@@ -90,7 +90,7 @@ All hooks produce **zero stdout** — no text is injected into your conversation
 
 ## Data
 
-Stored in `~/.claude-buddy/`:
+Stored in `~/.buddybar/`:
 
 | File | Purpose |
 |------|---------|
