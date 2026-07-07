@@ -151,9 +151,16 @@ function scriptPathFromCommand(command) {
 
 function localPathFromBashPath(scriptPath) {
   const text = String(scriptPath);
+  if (process.platform !== 'win32') return text;
+  // WSL form: /mnt/c/...
   const wslPath = text.match(/^\/mnt\/([A-Za-z])\/(.*)$/);
-  if (process.platform === 'win32' && wslPath) {
+  if (wslPath) {
     return `${wslPath[1].toUpperCase()}:\\${wslPath[2].replace(/\//g, '\\')}`;
+  }
+  // MSYS / Git Bash form: /c/...
+  const msysPath = text.match(/^\/([A-Za-z])\/(.*)$/);
+  if (msysPath) {
+    return `${msysPath[1].toUpperCase()}:\\${msysPath[2].replace(/\//g, '\\')}`;
   }
   return text;
 }

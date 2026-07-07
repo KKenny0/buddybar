@@ -7,6 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { execSync } = require('child_process');
 const {
   getOrCreatePet,
   generatePet,
@@ -36,13 +37,31 @@ function shellQuote(value) {
   return `'${String(value).replace(/'/g, `'\\''`)}'`;
 }
 
+// ponytail: Git Bash (MSYS) uses /c/, WSL uses /mnt/c/. Probe the runtime bash
+// once so setupHooks writes a path the executing bash can actually resolve.
+// Ceilings: Cygwin /cygdrive/c/ not handled — add a branch if a Cygwin user appears.
+let _msysBash;
+function isMsysBash() {
+  if (_msysBash !== undefined) return _msysBash;
+  if (process.platform !== 'win32') return (_msysBash = false);
+  try {
+    _msysBash = /MINGW|MSYS/.test(execSync('bash -c "uname -s"', {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }));
+  } catch (_) {
+    _msysBash = false;
+  }
+  return _msysBash;
+}
+
 function bashPath(value) {
   const text = String(value);
   const windowsDrive = text.match(/^([A-Za-z]):[\\/](.*)$/);
-  if (windowsDrive) {
-    return `/mnt/${windowsDrive[1].toLowerCase()}/${windowsDrive[2].replace(/\\/g, '/')}`;
-  }
-  return text.replace(/\\/g, '/');
+  if (!windowsDrive) return text.replace(/\\/g, '/');
+  const drive = windowsDrive[1].toLowerCase();
+  const rest = windowsDrive[2].replace(/\\/g, '/');
+  return `${isMsysBash() ? `/${drive}` : `/mnt/${drive}`}/${rest}`;
 }
 
 function commandQuote(value) {
